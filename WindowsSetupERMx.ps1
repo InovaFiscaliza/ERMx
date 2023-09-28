@@ -1,18 +1,19 @@
-# Script PowerShell de ConfiguraÁ„o do Windows para uso do ERMx
-#
+# Script PowerShell de Configura√ß√£o do Windows para uso do ERMx
 
-# imprime mensagens de alerta com condiÁıes necess·rias para a execuÁ„o do script
+# imprime mensagens de alerta com condi√ß√µes necess√°rias para a execu√ß√£o do script
 $colunas = $Host.UI.RawUI.BufferSize.Width
 Write-Host "`n"
 Write-Host ("_" * $colunas) -ForegroundColor Green
-Write-Host "Este script deve ser executado com privilÈgios de administrador."
-Write-Host "Este script deve ser executado com a conex„o OpenVPN ativa.`n"
-Write-Host "Sugere-se ainda que:"
-Write-Host "    - Remova a m·quina do domÌnio da Anatel e criu duas contas locais"
-Write-Host "           (uma para administraÁ„o, outra para execuÁ„o do appColeta)"
-Write-Host "    - Ative o boot autom·tico na energia AC na BIOS"
-Write-Host "    - Configure o login autom·tico no Windows"
-Write-Host "    - Configure e teste a conex„o OpenVPN com a chave da estaÁ„o.`n"
+Write-Host "Script de Configura√ß√£o de Rede para m√°quinas Windows em uso ERMx" -ForegroundColor Green
+Write-Host ("_" * $colunas) -ForegroundColor Green
+Write-Host "`n Este script deve ser executado com privil√©gios de administrador"
+Write-Host " Este script deve ser executado com a conex√£o OpenVPN ativa.`n"
+Write-Host " Sugere-se ainda que:"
+Write-Host "    - Remova a m√°quina do dom√≠nio da Anatel e criu duas contas locais"
+Write-Host "           (uma para administra√ß√£o, outra para execu√ß√£o do appColeta)"
+Write-Host "    - Ative o boot autom√°tico na energia AC na BIOS"
+Write-Host "    - Configure o login autom√°tico no Windows"
+Write-Host "    - Configure e teste a conex√£o OpenVPN com a chave da esta√ß√£o.`n"
 Write-Host "Deseja continuar? (S/N)"
 $confirm = Read-Host
 if ($confirm -ne "S") {
@@ -21,16 +22,15 @@ if ($confirm -ne "S") {
 Write-Host ("_" * $colunas) -ForegroundColor Green
 Write-Host "`n"
 
-# ObtÈm o IP da OpenVPN da interface onde o IP comeÁa com "172.24." e armazena na vari·vel $openVpnIp
+# Obt√©m o IP da OpenVPN da interface onde o IP come√ßa com "172.24." e armazena na vari√°vel $openVpnIp
 $openVpnIp = (Get-NetIPAddress | Where-Object {$_.IPAddress -like "172.24.*"}).IPAddress
 
-# Se n„o encontrar a interface, exibe mensagem de erro e sai
+# Se n√£o encontrar a interface, exibe mensagem de erro e sai
 if ($openVpnIp -eq $null) {
-    Write-Host "N„o foi possÌvel encontrar a interface TUN do OpenVPN. Verifique a conex„o VPN e tente novamente."
+    Write-Host "N√£o foi poss√≠vel encontrar a interface TUN do OpenVPN. Verifique a conex√£o VPN e tente novamente."
     exit
 }
-exit
-<#
+
 # Configura o IP da interface como gateway para a rede da Anatel
 route -p add 192.168.64.0 MASK 255.255.192.0 $openVpnIp
 route -p add 192.168.128.0 MASK 255.255.128.0 $openVpnIp
@@ -42,13 +42,12 @@ Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Terminal Server\W
 # Ativa o Remote Desktop
 Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Terminal Server" -Name fDenyTSConnections -value 0
 
-# Ativa a regra para permitir resposta ao ping ativando todas as regras do grupo "DiagnÛstico do Sistema de Rede B·sico"
-Get-NetFirewallRule -DisplayGroup "DiagnÛstico do Sistema de Rede B·sico" | Set-NetFirewallRule -Enabled True
+# Ativa a regra para permitir resposta ao ping ativando todas as regras do grupo "Diagn√≥stico do Sistema de Rede B√°sico"
+Get-NetFirewallRule -DisplayGroup "Diagn√≥stico do Sistema de Rede B√°sico" | Set-NetFirewallRule -Enabled True
 
 # Cria regra de firewall permitindo RDP para todas as redes na porta 9081
-New-NetFirewallRule -DisplayName "¡rea de Trabalho Remota - Modo de Usu√°rio (TCP-Entrada-9081)" -Direction Inbound -Action Allow -Protocol TCP -LocalPort 9081 -Profile Any -Program Any -Service Any -Enabled True
-New-NetFirewallRule -DisplayName "¡rea de Trabalho Remota - Modo de Usu√°rio (UDP-Entrada-9081)" -Direction Inbound -Action Allow -Protocol UDP -LocalPort 9081 -Profile Any -Program Any -Service Any -Enabled True
+New-NetFirewallRule -DisplayName "√Årea de Trabalho Remota - Modo de Usu√É¬°rio (TCP-Entrada-9081)" -Direction Inbound -Action Allow -Protocol TCP -LocalPort 9081 -Profile Any -Program Any -Service Any -Enabled True
+New-NetFirewallRule -DisplayName "√Årea de Trabalho Remota - Modo de Usu√É¬°rio (UDP-Entrada-9081)" -Direction Inbound -Action Allow -Protocol UDP -LocalPort 9081 -Profile Any -Program Any -Service Any -Enabled True
 
 # Reinicializa o computador
 Restart-Computer -Force
-#>
