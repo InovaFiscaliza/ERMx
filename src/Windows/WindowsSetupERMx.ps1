@@ -3,25 +3,25 @@
 # imprime mensagens de alerta com condições necessárias para a execução do script
 $colunas = $Host.UI.RawUI.BufferSize.Width
 Write-Host "`n"
-Write-Host ("─" * $colunas) -ForegroundColor Green
-Write-Host "Script de Configuração de Rede para máquinas Windows em uso ERMx" -ForegroundColor Green
-Write-Host ("─" * $colunas) -ForegroundColor Green
-Write-Host "`n Este script deve ser executado com privilégios de administrador"
-Write-Host " Este script deve ser executado com a conexão OpenVPN ativa.`n"
-Write-Host ("─" * $colunas) -ForegroundColor Green
+Write-Host ("~" * $colunas) -ForegroundColor Green
+Write-Host "Script para configurar computadores Windows para uso em rede como ERMx" -ForegroundColor Green
+Write-Host ("~" * $colunas) -ForegroundColor Green
+Write-Host "`n Este script deve ser executado como administrador"
+Write-Host " Este script deve ser executado com a OpenVPN ativa e conectada.`n"
+Write-Host ("~" * $colunas) -ForegroundColor Green
 Write-Host " `nSugere-se ainda que:"
-Write-Host "    - Remova a máquina do domínio e mantenha apenas duas contas locais"
-Write-Host "           (uma para administração, outra para execução do appColeta)"
-Write-Host "    - Ative o boot automático na energia AC na BIOS"
-Write-Host "    - Configure o login automático no Windows"
-Write-Host "    - Configure e teste a conexão OpenVPN com a chave da estação.`n"
-Write-Host " `nAo fim da execução deste script, a máquina será reinicializada.`n"
+Write-Host "    - Remova a computador do dominio e mantenha apenas duas contas locais"
+Write-Host "           (uma para administrar, outra para executar aplicativos)"
+Write-Host "    - Ative o auto-boot com ativação da energia AC na BIOS"
+Write-Host "    - Configure o auto-login no Windows"
+Write-Host "    - Configure e teste a OpenVPN com a chave da ERMx.`n"
+Write-Host " `nAo terminar o script, deve-se reiniciar o computador.`n"
 Write-Host "Deseja continuar? (S/N)"
 $confirm = Read-Host
 if ($confirm -ne "S") {
     exit
 }
-Write-Host ("─" * $colunas) -ForegroundColor Green
+Write-Host ("~" * $colunas) -ForegroundColor Green
 Write-Host "`n"
 
 # Obtém o IP da OpenVPN da interface onde o IP começa com "172.24." e armazena na variável $openVpnIp
@@ -29,7 +29,7 @@ $openVpnIp = (Get-NetIPAddress | Where-Object {$_.IPAddress -like "172.24.*"}).I
 
 # Se não encontrar a interface, exibe mensagem de erro e sai
 if ($openVpnIp -eq $null) {
-    Write-Host "Não foi possível encontrar a interface TUN do OpenVPN. Verifique a conexão VPN e tente novamente."
+    Write-Host "Sem interface para OpenVPN. Verifique a conexão VPN e tente novamente."
     exit
 }
 
@@ -51,10 +51,10 @@ Get-NetFirewallRule -DisplayGroup "Diagnóstico do Sistema de Rede Básico" | Se
 New-NetFirewallRule -DisplayName "Área de Trabalho Remota - Modo de UsuÃ¡rio (TCP-Entrada-9081)" -Direction Inbound -Action Allow -Protocol TCP -LocalPort 9081 -Profile Any -Program Any -Service Any -Enabled True
 New-NetFirewallRule -DisplayName "Área de Trabalho Remota - Modo de UsuÃ¡rio (UDP-Entrada-9081)" -Direction Inbound -Action Allow -Protocol UDP -LocalPort 9081 -Profile Any -Program Any -Service Any -Enabled True
 
-Write-Host ("─" * $colunas) -ForegroundColor Green
-Write-Host "A máquin passará a estar acessível para acessso remoto via RDP na porta 9081." 
-Write-Host ("─" * $colunas) -ForegroundColor Green
-Write-Host "A máquina pode ser reiniciada agora? (S/N)"
+Write-Host ("~" * $colunas) -ForegroundColor Green
+Write-Host "Para acesso remoto via RDP utilize agora a porta 9081." 
+Write-Host ("~" * $colunas) -ForegroundColor Green
+Write-Host "Reiniciar o computador agora? (S/N)"
 $confirm = Read-Host
 if ($confirm -ne "S") {
     exit

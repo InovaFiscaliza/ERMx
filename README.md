@@ -14,20 +14,6 @@
   <summary>Table of Contents</summary>
   <ol>
     <li><a href="#about-RF.Fusion">About RF.Fusion</a></li>
-    <li><a href="#background">Background</a></li>
-      <ul>
-        <li><a href="#monitoring-unit">Monitoring Unit</a></li>
-        <li><a href="#network-server-core">Network Server Core</a></li>
-      </ul>
-    <li><a href="#bricks-and-blocks">Bricks and Blocks</a></li>
-    <ul>
-    <li><a href="#openvpn">OpenVPN</a></li>
-    <li><a href="#zabbix-and-grafana">Zabbix and Grafana</a></li>
-    <li><a href="#nginx">NGINX</a></li>
-    <li><a href="#appcataloga">appCataloga</a></li>
-    <li><a href="#other">Other</a></li>
-    </ul>
-    <li><a href="#getting-started">Getting Started</a></li>
     <li><a href="#roadmap">Roadmap</a></li>
     <li><a href="#contributing">Contributing</a></li>
     <li><a href="#license">License</a></li>
@@ -38,7 +24,9 @@
 <!-- ABOUT THE PROJECT -->
 # About ERMx
 
-ERMX is the acronym for "Estação Remota de Monitoramento" with the added letter "x" as a reference to a variable, since the objective is to provide a framework to construct a usefull spectrum monitoring station from an assortment of components, that may be adapted to the specific needs of each project.
+ERMX is the acronym for "Estação Remota de Monitoramento" with the added letter "x" as a reference to a variable, since the objective is to provide a framework to construct a usefull spectrum monitoring station from assorted components, that may be adapted to the specific needs of each project.
+
+This repository stores the documentation and scripts for the installation and configuration of the main components of the ERMx project.
 
 The following figure presents a general view main elements for ERMx.
 
@@ -51,29 +39,12 @@ The following figure presents a general view main elements for ERMx.
 
 <p align="right">(<a href="#indexerd-md-top">back to top</a>)</p>
 
-
-<!-- GETTING STARTED -->
-# Getting Started
-
-This initial page provide links to additional pages under the same project with detailed information about the installation of each component.
-
-Currently there is no quick deployment tool and components need to be installed manually or with the aid of indicated scripts.
-
-<p align="right">(<a href="#indexerd-md-top">back to top</a>)</p>
-
 <!-- ROADMAP -->
 # Roadmap
 
 * [ ] Create main repository and upload existing data
   * [x] Complete base upload
-  * [ ] Upload grafana nginx configuration
-  * [ ] Upload nginx zabbix-grafana proxy configuration
-* [ ] Start issue list
-* [ ] Adapt appCataloga to new architecture
-  * [ ] Test file catalog agent
-  * [ ] Test integration modes between Zabbix and appCataloga
-    * [ ] Use Zabbix external_check to call the backup microservice for a single host and get latest backup data results.
-    * [ ] Use Zabbix api to load station list, sweep list getting files, use zabbix trapper item to load data into host.
+  * [ ] Upload additional data from related projects
     
 
 See the [open issues](https://github.com/othneildrew/Best-README-Template/issues) for a full list of proposed features (and known issues).
@@ -119,5 +90,5 @@ Further reading material can be found at:
 <p align="right">(<a href="#indexerd-md-top">back to top</a>)</p>
 
 <!-- MARKDOWN LINKS & IMAGES -->
-[smn_overview]: https://github.com/FSLobao/RF.Fusion/tree/main/docs/images/general_diagram.svg
+[ermx_overview]: ./docs/img/SMN_overview.svg
 
