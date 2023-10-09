@@ -1,6 +1,16 @@
-# Script PowerShell de Configuração do Windows para uso do ERMx
+# Script PowerShell for ERMx Windows Setup
+# Use o comando "Set-ExecutionPolicy RemoteSigned" para permitir a execução de scripts não assinados
 
-# imprime mensagens de alerta com condições necessárias para a execução do script
+# Control variables
+$VPNNetwork = "172.24.0.0/21"
+
+$Routes = @(
+    @{ DestinationNetwork = "192.168.64.0/18"; GatewayIP = "172.24.0.1" },
+    @{ DestinationNetwork = "192.168.128.0/17"; GatewayIP = "172.24.0.1" },
+    @{ DestinationNetwork = "10.0.0.0/8"; GatewayIP = "172.24.0.1" }
+)
+
+# Print script header message
 $colunas = $Host.UI.RawUI.BufferSize.Width
 Write-Host "`n"
 Write-Host ("~" * $colunas) -ForegroundColor Green
@@ -24,41 +34,51 @@ if ($confirm -ne "S") {
 Write-Host ("~" * $colunas) -ForegroundColor Green
 Write-Host "`n"
 
-# Obtém o IP da OpenVPN da interface onde o IP começa com "172.24." e armazena na variável $openVpnIp
-$openVpnIp = (Get-NetIPAddress | Where-Object {$_.IPAddress -like "172.24.*"}).IPAddress
+# Get the network interface for the specified IP range
+$Interface = Get-NetRoute | Where-Object {$_.DestinationPrefix -eq "$VPNNetwork"}
 
-# Se não encontrar a interface, exibe mensagem de erro e sai
-if ($openVpnIp -eq $null) {
+if ($Interface -eq $null) {
     Write-Host "Sem interface para OpenVPN. Verifique a conexão VPN e tente novamente."
-    exit
+} else {
+    foreach ($RouteInfo in $Routes) {
+        $DestinationNetwork = $RouteInfo.DestinationNetwork
+        $GatewayIP = $RouteInfo.GatewayIP
+
+        # Add a route using the interface ID and gateway IP
+        New-NetRoute -DestinationPrefix "$DestinationNetwork" -InterfaceIndex $Interface.InterfaceIndex -NextHop $GatewayIP -RouteMetric 1
+
+        Write-Host "Adicionada rota $DestinationNetwork via $GatewayIP na interface $($Interface.InterfaceAlias) (ID: $($Interface.InterfaceIndex))."
+    }
 }
 
-# Configura o IP da interface como gateway para a rede da Anatel
-route -p add 192.168.64.0 MASK 255.255.192.0 $openVpnIp
-route -p add 192.168.128.0 MASK 255.255.128.0 $openVpnIp
-route -p add 10.0.0.0 MASK 255.0.0.0 $openVpnIp
-
-# Configura o RDP par porta 9081
+# Configure RDP port to 9081
 Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp" -Name PortNumber -value 9081
 
-# Ativa o Remote Desktop
+# Activate RDP service
 Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Terminal Server" -Name fDenyTSConnections -value 0
 
-# Ativa a regra para permitir resposta ao ping ativando todas as regras do grupo "Diagnóstico do Sistema de Rede Básico"
+# Create new rule for RDP port 9081
+New-NetFirewallRule -DisplayName "Área de Trabalho Remota - Modo de Usuário (TCP-Entrada-9081)" -Direction Inbound -Action Allow -Protocol TCP -LocalPort 9081 -Profile Any -Program Any -Service Any -Enabled True
+New-NetFirewallRule -DisplayName "Área de Trabalho Remota - Modo de Usuário (UDP-Entrada-9081)" -Direction Inbound -Action Allow -Protocol UDP -LocalPort 9081 -Profile Any -Program Any -Service Any -Enabled True
+
+Write-Host "Ativado serviço de Área de Trabalho Remota na porta 9081."
+
+# Activate firewall rule "Diagnóstico do Sistema de Rede Básico"
 Get-NetFirewallRule -DisplayGroup "Diagnóstico do Sistema de Rede Básico" | Set-NetFirewallRule -Enabled True
 
-# Cria regra de firewall permitindo RDP para todas as redes na porta 9081
-New-NetFirewallRule -DisplayName "Área de Trabalho Remota - Modo de UsuÃ¡rio (TCP-Entrada-9081)" -Direction Inbound -Action Allow -Protocol TCP -LocalPort 9081 -Profile Any -Program Any -Service Any -Enabled True
-New-NetFirewallRule -DisplayName "Área de Trabalho Remota - Modo de UsuÃ¡rio (UDP-Entrada-9081)" -Direction Inbound -Action Allow -Protocol UDP -LocalPort 9081 -Profile Any -Program Any -Service Any -Enabled True
+# Change network interface for network 172.24.0.0 as "rede privada"
+Set-NetConnectionProfile -InterfaceAlias $Interface.InterfaceAlias -NetworkCategory Private
+
+Write-Host "OpenVPN configurada como rede privada e ativada regra para resposta a ping."
 
 Write-Host ("~" * $colunas) -ForegroundColor Green
 Write-Host "Para acesso remoto via RDP utilize agora a porta 9081." 
 Write-Host ("~" * $colunas) -ForegroundColor Green
-Write-Host "Reiniciar o computador agora? (S/N)"
+Write-Host "Reiniciar o computador agora? (S/N)" -ForegroundColor Red
 $confirm = Read-Host
 if ($confirm -ne "S") {
     exit
 }
 
-# Reinicializa o computador
+# Restart computer
 Restart-Computer -Force
