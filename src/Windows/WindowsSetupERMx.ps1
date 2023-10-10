@@ -1,4 +1,6 @@
 # Script PowerShell for ERMx Windows Setup
+# Version 20231010
+
 # Use o comando "Set-ExecutionPolicy RemoteSigned" para permitir a execução de scripts não assinados
 
 # Control variables
@@ -34,9 +36,10 @@ if ($confirm -ne "S") {
 Write-Host ("~" * $colunas) -ForegroundColor Green
 Write-Host "`n"
 
-# Get the network interface for the specified IP range
+# Get the network interface for the specified IP range used by OpenVPN
 $Interface = Get-NetRoute | Where-Object {$_.DestinationPrefix -eq "$VPNNetwork"}
 
+# Check if the interface was found and add the routes
 if ($Interface -eq $null) {
     Write-Host "Sem interface para OpenVPN. Verifique a conexão VPN e tente novamente."
 } else {
@@ -63,8 +66,8 @@ New-NetFirewallRule -DisplayName "Área de Trabalho Remota - Modo de Usuário (U
 
 Write-Host "Ativado serviço de Área de Trabalho Remota na porta 9081."
 
-# Activate firewall rule "Diagnóstico do Sistema de Rede Básico"
-Get-NetFirewallRule -DisplayGroup "Diagnóstico do Sistema de Rede Básico" | Set-NetFirewallRule -Enabled True
+# Activate firewall rule to enable ping response
+Get-NetFirewallRule -name "CoreNet-Diag-ICMP4-EchoRequest-In-NoScope" | Set-NetFirewallRule -Enabled True -Profile Any -RemoteAddress "10.0.0.0/8","192.168.0.0/16","172.16.0.0/12"
 
 # Change network interface for network 172.24.0.0 as "rede privada"
 Set-NetConnectionProfile -InterfaceAlias $Interface.InterfaceAlias -NetworkCategory Private
@@ -74,11 +77,15 @@ Write-Host "OpenVPN configurada como rede privada e ativada regra para resposta 
 Write-Host ("~" * $colunas) -ForegroundColor Green
 Write-Host "Para acesso remoto via RDP utilize agora a porta 9081." 
 Write-Host ("~" * $colunas) -ForegroundColor Green
-Write-Host "Reiniciar o computador agora? (S/N)" -ForegroundColor Red
-$confirm = Read-Host
-if ($confirm -ne "S") {
-    exit
-}
+Write-Host "O computador será reiniciado em 5 segundos. Use Ctrl+C para interromper" -ForegroundColor Red
 
+# Print countdow to restart for 10 seconds
+for ($i = 10; $i -gt 0; $i--) {
+    for ($i = 10; $i -gt 0; $i--) {
+        Write-Host -NoNewLine "`rReiniciando em $i segundos..."
+        Start-Sleep -Seconds 1
+    }
+    Start-Sleep -Seconds 1
+}
 # Restart computer
 Restart-Computer -Force
