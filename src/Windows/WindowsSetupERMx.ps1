@@ -95,12 +95,12 @@ Checkpoint-Computer -Description "Ponto de restauração criado pelo script de c
 Write-Host ("~" * $colunas) -ForegroundColor Green
 Write-Host "Para acesso remoto via RDP utilize agora a porta 9081." 
 Write-Host ("~" * $colunas) -ForegroundColor Green
-Write-Host "O computador será reiniciado em 5 segundos. Use Ctrl+C para interromper" -ForegroundColor Red
+Write-Host "O computador será reiniciado em 10 segundos. Use Ctrl+C para interromper a reinicialização`n" -ForegroundColor Red
 
 # Print countdow to restart for 10 seconds
 for ($i = 10; $i -gt 0; $i--) {
     for ($i = 10; $i -gt 0; $i--) {
-        Write-Host -NoNewLine "`rReiniciando em $i segundos..."
+        Write-Host -NoNewLine "`rReiniciando em $i segundos..." -ForegroundColor Red
         Start-Sleep -Seconds 1
     }
     Start-Sleep -Seconds 1
