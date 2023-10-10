@@ -18,16 +18,14 @@ Write-Host "`n"
 Write-Host ("~" * $colunas) -ForegroundColor Green
 Write-Host "Script para configurar computadores Windows para uso em rede como ERMx" -ForegroundColor Green
 Write-Host ("~" * $colunas) -ForegroundColor Green
-Write-Host "`n Este script deve ser executado como administrador"
-Write-Host " Este script deve ser executado com a OpenVPN ativa e conectada.`n"
-Write-Host ("~" * $colunas) -ForegroundColor Green
-Write-Host " `nSugere-se ainda que:"
-Write-Host "    - Remova a computador do dominio e mantenha apenas duas contas locais"
-Write-Host "           (uma para administrar, outra para executar aplicativos)"
+Write-Host "`n Pré-requisitos:"
 Write-Host "    - Ative o auto-boot com ativação da energia AC na BIOS"
-Write-Host "    - Configure o auto-login no Windows"
-Write-Host "    - Configure e teste a OpenVPN com a chave da ERMx.`n"
-Write-Host " `nAo terminar o script, deve-se reiniciar o computador.`n"
+Write-Host "    - Formate o computador e instale o Windows (instalação limpa)"
+Write-Host "    - Inicialize a máquina com perfil administrador local"
+Write-Host "    - Instale, configure e conecte na OpenVPN"
+Write-Host "    - Configure a rede local ethernet com IP estático na faixa 192.168.10.0/24`n"
+Write-Host ("~" * $colunas) -ForegroundColor Green
+Write-Host " `nAo terminar o script, o computador será reiniciado.`n"
 Write-Host "Deseja continuar? (S/N)"
 $confirm = Read-Host
 if ($confirm -ne "S") {
@@ -35,6 +33,23 @@ if ($confirm -ne "S") {
 }
 Write-Host ("~" * $colunas) -ForegroundColor Green
 Write-Host "`n"
+
+# create a restore point
+Checkpoint-Computer -Description "Ponto de restauração criado pelo script de configuração do ERMx, pré-execução"
+
+# configure openvpn client to start as a service
+Set-Service -Name "OpenVPNService" -StartupType Automatic
+
+# Create a user account with the login "Anatel" and password "ermx"
+New-LocalUser -Name "Anatel" -Password (ConvertTo-SecureString "ermx" -AsPlainText -Force) -FullName "Fiscalização Anatel" -Description "Usuário para uso em fiscalização da Anatel" -NoPasswordExpiration
+
+# disable automatic windows update
+Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Name NoAutoUpdate -value 1
+
+# Enable auto logon for default user and password
+Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" -Name DefaultUserName -value "Anatel"
+Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" -Name DefaultPassword -value "ermx"
+Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" -Name AutoAdminLogon -value 1
 
 # Get the network interface for the specified IP range used by OpenVPN
 $Interface = Get-NetRoute | Where-Object {$_.DestinationPrefix -eq "$VPNNetwork"}
@@ -73,6 +88,9 @@ Get-NetFirewallRule -name "CoreNet-Diag-ICMP4-EchoRequest-In-NoScope" | Set-NetF
 Set-NetConnectionProfile -InterfaceAlias $Interface.InterfaceAlias -NetworkCategory Private
 
 Write-Host "OpenVPN configurada como rede privada e ativada regra para resposta a ping."
+
+# create a restore point
+Checkpoint-Computer -Description "Ponto de restauração criado pelo script de configuração do ERMx, pós-execução"
 
 Write-Host ("~" * $colunas) -ForegroundColor Green
 Write-Host "Para acesso remoto via RDP utilize agora a porta 9081." 
