@@ -1,7 +1,7 @@
 # Script PowerShell for ERMx Windows Setup
 
 
-# Use o comando "Set-ExecutionPolicy RemoteSigned" para permitir a execuÁ„o de scripts n„o assinados
+# Use o comando "Set-ExecutionPolicy RemoteSigned" para permitir a execu√ß√£o de scripts n√£o assinados
 
 # Control variables
 $version = "1.0" # script version from 16/10/2023
@@ -20,10 +20,10 @@ $Routes = @(
     @{ DestinationNetwork = "10.0.0.0/8"; GatewayIP = "172.24.0.1" }
 )
 
-# 5000-5009 -> Reservada para acesso a dispositivos de comunicaÁ„o (roteador, switch, modem, etc)
-# 5010-5019 -> Reservado para acesso a dispositivos de controle ambiental e infra (rÈgua inteligente, UPS, alarmes de temperatura, umidade, invas„o, c‚meras, etc)
+# 5000-5009 -> Reservada para acesso a dispositivos de comunica√ß√£o (roteador, switch, modem, etc)
+# 5010-5019 -> Reservado para acesso a dispositivos de controle ambiental e infra (r√©gua inteligente, UPS, alarmes de temperatura, umidade, invas√£o, c√¢meras, etc)
 # 5020-5029 -> Reservado para dispositivos de controle e processamento (acesso RDP, SSH, Volumes compartilhados em rede, etc)
-# 5050-5099 -> Reservado para dispositivos de mediÁ„o (receptores, analisadores, stream de demoduladores, etc)
+# 5050-5099 -> Reservado para dispositivos de medi√ß√£o (receptores, analisadores, stream de demoduladores, etc)
 
 $RDPNewPort = "9081"
 $TCP_port_proxy = @(
@@ -45,21 +45,21 @@ $colunas = $Host.UI.RawUI.BufferSize.Width
 Write-Host "`n"
 Write-Host ("~" * $colunas) -ForegroundColor Green
 Write-Host "Script para configurar computadores Windows para uso em rede como ERMx" -ForegroundColor Green
-Write-Host "Vers„o: $version" -ForegroundColor Green
+Write-Host "Vers√£o: $version" -ForegroundColor Green
 Write-Host ("~" * $colunas) -ForegroundColor Green
 Write-Host "`nPre-requisitos:"
-Write-Host "    - Certifique-se que foi habilitado o auto-boot com ativaÁ„o da energia AC na BIOS"
-Write-Host "    - Certifique-se que este computador tenha sido formatado e encontra-se com a instalaÁ„o limpa do Windows (e atualizado ate a vers„o 22H2 ou superior)"
-Write-Host "    - Certifique-se que esta m·quina tenha sido inicializada com perfil administrador local"
+Write-Host "    - Certifique-se que foi habilitado o auto-boot com ativa√ß√£o da energia AC na BIOS"
+Write-Host "    - Certifique-se que este computador tenha sido formatado e encontra-se com a instala√ß√£o limpa do Windows (e atualizado ate a vers√£o 22H2 ou superior)"
+Write-Host "    - Certifique-se que esta m√°quina tenha sido inicializada com perfil administrador local"
 Write-Host "    - Certifique-se que o OpenVPN GUI tenha sido instalado, configurado e conectado com sucesso ao servidor."
-Write-Host "    - Certifique-se que a rede local ethernet tenha sido configurada com IP est·tico na faixa 192.168.0.0/24"
-Write-Host "    - Certifique-se que a a vari·vel TCP_port_proxy, definida no inÌcio do script, tenha sido ajustada corretament para corresponder ‡ configuraÁ„o desejada.`n"
+Write-Host "    - Certifique-se que a rede local ethernet tenha sido configurada com IP est√°tico na faixa 192.168.0.0/24"
+Write-Host "    - Certifique-se que a a vari√°vel TCP_port_proxy, definida no in√≠cio do script, tenha sido ajustada corretament para corresponder √† configura√ß√£o desejada.`n"
 Write-Host ("~" * $colunas) -ForegroundColor Green
-Write-Host "`nAo terminar o script, o computador ser· reiniciado.`n"
+Write-Host "`nAo terminar o script, o computador ser√° reiniciado.`n"
 
 # print warning if $noDebug is false (no changes will be made)
 if (!$noDebug) {
-    Write-Host "`n ! Modo de debug habilitado ! Nenhuma alteraÁ„o ser· realizada. Modifique a variavel nodebug para true para modificar o sistema.`n" -ForegroundColor Red
+    Write-Host "`n ! Modo de debug habilitado ! Nenhuma altera√ß√£o ser√° realizada. Modifique a variavel nodebug para true para modificar o sistema.`n" -ForegroundColor Red
 }
 
 Write-Host "Deseja continuar? (S/N)"
@@ -71,31 +71,31 @@ Write-Host ("~" * $colunas) -ForegroundColor Green
 Write-Host "`n"
 
 # create a restore point
-Write-Host "`nCriando um ponto de restauraÁ„o antes da execuÁ„o das configuraÁıes."
+Write-Host "`nCriando um ponto de restaura√ß√£o antes da execu√ß√£o das configura√ß√µes."
 if ($noDebug) {
     Enable-ComputerRestore "C:\"
-    Checkpoint-Computer -Description "Ponto de restauraÁ„o criado pelo script de configuraÁ„o do ERMx, prÈ-execuÁ„o"
+    Checkpoint-Computer -Description "Ponto de restaura√ß√£o criado pelo script de configura√ß√£o do ERMx, pr√©-execu√ß√£o"
 }
-Write-Host "Ponto de restauraÁ„o criado pelo script de configuraÁ„o do ERMx, pre-execuÁ„o.`n"
+Write-Host "Ponto de restaura√ß√£o criado pelo script de configura√ß√£o do ERMx, pre-execu√ß√£o.`n"
 
 # configure openvpn client to start as a service
 if ($noDebug) {
     Set-Service -Name "OpenVPNService" -StartupType Automatic
 }
-Write-Host "`nOpenVPN habilitado como serviÁo, com inicializaÁ„o autom·tica com o Windows.`n "
+Write-Host "`nOpenVPN habilitado como servi√ßo, com inicializa√ß√£o autom√°tica com o Windows.`n "
 
 # Create a user account with the login "Fiscal" and password "ermx"
 if ($noDebug) {
-    New-LocalUser -Name $user -Password (ConvertTo-SecureString $password -AsPlainText -Force) -FullName "FiscalizaÁ„o Anatel" -Description "Usu·rio para uso em fiscalizaÁ„o da Anatel" -NoPasswordExpiration
+    New-LocalUser -Name $user -Password (ConvertTo-SecureString $password -AsPlainText -Force) -FullName "Fiscaliza√ß√£o Anatel" -Description "Usu√°rio para uso em fiscaliza√ß√£o da Anatel" -NoPasswordExpiration
 }
-Write-Host "`nCriado usu·rio $user no Windows para uso em fiscalizaÁ„o (Senha: $password).`n"
+Write-Host "`nCriado usu√°rio $user no Windows para uso em fiscaliza√ß√£o (Senha: $password).`n"
 
 # disable automatic windows update
 if ($noDebug) {
     stop-Service wuauserv
     Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Name NoAutoUpdate -value 1
 }
-Write-Host "`nDesabilitadas as atualizaÁıes automaticas do Windows Update.`n"
+Write-Host "`nDesabilitadas as atualiza√ß√µes automaticas do Windows Update.`n"
 
 # Enable auto logon for default user and password
 if ($noDebug) {
@@ -103,7 +103,7 @@ if ($noDebug) {
     Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" -Name DefaultPassword -value "ermx"
     Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" -Name AutoAdminLogon -value 1
 }
-Write-Host "`nHabilitado o logon autom·tico do usu·rio criado.`n"
+Write-Host "`nHabilitado o logon autom√°tico do usu√°rio criado.`n"
 
 # Get the network interface for the specified IP range used by OpenVPN
 $Interface = Get-NetRoute | Where-Object { $_.DestinationPrefix -eq "$VPNNetwork" }
@@ -135,8 +135,8 @@ if ($noDebug) {
     Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Terminal Server" -Name fDenyTSConnections -value 0
 
     # Create new rule for RDP port 9081
-    New-NetFirewallRule -DisplayName "Area de Trabalho Remota - Modo de Usu·rio (TCP-Entrada-9081)" -Direction Inbound -Action Allow -Protocol TCP -LocalPort $RDPNewPort -Profile Any -Program Any -Service Any -Enabled True
-    New-NetFirewallRule -DisplayName "Area de Trabalho Remota - Modo de Usu·rio (UDP-Entrada-9081)" -Direction Inbound -Action Allow -Protocol UDP -LocalPort $RDPNewPort -Profile Any -Program Any -Service Any -Enabled True
+    New-NetFirewallRule -DisplayName "Area de Trabalho Remota - Modo de Usu√°rio (TCP-Entrada-9081)" -Direction Inbound -Action Allow -Protocol TCP -LocalPort $RDPNewPort -Profile Any -Program Any -Service Any -Enabled True
+    New-NetFirewallRule -DisplayName "Area de Trabalho Remota - Modo de Usu√°rio (UDP-Entrada-9081)" -Direction Inbound -Action Allow -Protocol UDP -LocalPort $RDPNewPort -Profile Any -Program Any -Service Any -Enabled True
 }
 Write-Host "`nAtivado servico de Area de Trabalho Remota na porta $RDPNewPort.`n"
 
@@ -169,11 +169,11 @@ if ($noDebug) {
 Write-Host "`nOpenVPN configurada como rede privada e ativada regra no firewall para resposta a ping.`n"
 
 # create a restore point
-Write-Host "`nCriando um ponto de restauraÁ„o apos a execuÁ„o das configuraÁıes."
+Write-Host "`nCriando um ponto de restaura√ß√£o apos a execu√ß√£o das configura√ß√µes."
 if ($noDebug) {
-    Checkpoint-Computer -Description "Ponto de restauraÁ„o criado pelo script de configuraÁ„o do ERMx, pÛs-execuÁ„o"
+    Checkpoint-Computer -Description "Ponto de restaura√ß√£o criado pelo script de configura√ß√£o do ERMx, p√≥s-execu√ß√£o"
 }
-Write-Host "Ponto de restauraÁ„o criado pelo script de configuraÁ„o do ERMx, pos-execuÁ„o.`n"
+Write-Host "Ponto de restaura√ß√£o criado pelo script de configura√ß√£o do ERMx, pos-execu√ß√£o.`n"
 
 Write-Host ("~" * $colunas) -ForegroundColor Green
 # printe warning if debug mode is enabled (no changes will be made)
@@ -181,10 +181,10 @@ if ($noDebug) {
     Write-Host "Para acesso remoto via RDP utilize agora a porta $RDPNewPort."
 }
 else {
-    Write-Host "Modo de debug habilitado. Nenhuma alteraÁ„o foi realizada."
+    Write-Host "Modo de debug habilitado. Nenhuma altera√ß√£o foi realizada."
 }
 Write-Host ("~" * $colunas) -ForegroundColor Green
-Write-Host "`nO computador ser· reiniciado em 10 segundos. Use Ctrl+C para interromper a reinicializaÁ„o`n" -ForegroundColor Red
+Write-Host "`nO computador ser√° reiniciado em 10 segundos. Use Ctrl+C para interromper a reinicializa√ß√£o`n" -ForegroundColor Red
 
 # Print countdow to restart for 10 seconds
 for ($i = 10; $i -gt 1; $i--) {

@@ -39,6 +39,22 @@ The following figure presents a general view main elements for ERMx.
 
 <p align="right">(<a href="#indexerd-md-top">back to top</a>)</p>
 
+# Modules and Microservices
+
+The ERMx project is composed of several modules and microservices that are responsible for the configuration of the controller PC running MS Windows.
+
+The main modules are:
+| Script module | Description |
+| --- | --- |
+| [**`config.json`**](./src/Windows/config.json) | Data dictionary defined in json with constants that define the powershell script behaviour |
+| [**`user_setup.ps1`**](./src/Windows/user_setup.ps) | Script to create the user and group for the ERMx services |
+| [**`ovpn_setup.ps1`**](./src/Windows/ovpn_setup.ps1) | Script to install and configure the OpenVPN client including routes to remote LAN |
+| [**`firewall_setup.ps1`**](./src/Windows/firewall_setup.ps1) | Script to configure the Windows Firewall |
+| [**`openssh_setup.ps1`**](./src/Windows/openssh_setup.ps1) | Script to install and configure the OpenSSH server |
+| [**`store_manage_service.ps1`**](./src/Windows/store_manage_service.ps1) | Deploy a file storage management service, responsible for FIFO deletion of specific folders |
+| [**`install_ermx.ps1`**](./src/Windows/install_ermx.ps1) | Main script to install all the modules and microservices |
+
+
 <!-- ROADMAP -->
 # Roadmap
 

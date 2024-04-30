@@ -1,0 +1,7 @@
+{
+  "GUI": {"start_width": 400,
+          "start_height": 300},
+  "Port": 8080,
+  "Username": "user123",
+  "Password": "password123"
+}
