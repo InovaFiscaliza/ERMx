@@ -43,25 +43,32 @@ The following figure presents a general view main elements for ERMx.
 
 The ERMx project is composed of several modules and microservices that are responsible for the configuration of the controller PC running MS Windows.
 
-The main modules are:
+The current version is available at [**`WindowsSetupERMx.ps1`**](./src/Windows/WindowsSetupERMx.ps1) and performs simple configurations for the Windows OS to run the ERMx services.
+
+The main modules for the next version are under construction and split the original module into several functions/modules in order to allow a more flexible configuration, including for other spectrum monitoring platforms.
+
+They new modules are:
+
 | Script module | Description |
 | --- | --- |
-| [**`config.json`**](./src/Windows/config.json) | Data dictionary defined in json with constants that define the powershell script behaviour |
-| [**`user_setup.ps1`**](./src/Windows/user_setup.ps) | Script to create the user and group for the ERMx services |
+| [**`config.json`**](./src/Windows/config.json) | Configuration parameters that define the powershell script behavior |
 | [**`ovpn_setup.ps1`**](./src/Windows/ovpn_setup.ps1) | Script to install and configure the OpenVPN client including routes to remote LAN |
-| [**`firewall_setup.ps1`**](./src/Windows/firewall_setup.ps1) | Script to configure the Windows Firewall |
-| [**`openssh_setup.ps1`**](./src/Windows/openssh_setup.ps1) | Script to install and configure the OpenSSH server |
-| [**`store_manage_service.ps1`**](./src/Windows/store_manage_service.ps1) | Deploy a file storage management service, responsible for FIFO deletion of specific folders |
-| [**`install_ermx.ps1`**](./src/Windows/install_ermx.ps1) | Main script to install all the modules and microservices |
+| [**`proxy_setup.ps1`**](./src/Windows/proxy_setup.ps1) | Script to configure proxy rules that enable the access to LAN services through the PC, mostly useful when the PC operates as gateway for the LAN |
+| [**`rdp_setup.ps1`**](./src/Windows/firewall_setup.ps1) | Script to configure the Windows RDP access, includes creating user and setting firewall rules |
+services to OpenVPN remote clients |
+| [**`openssh_setup.ps1`**](./src/Windows/openssh_setup.ps1) | Script to install and configure the OpenSSH server, includes creating user and setting firewall rules |
+| [**`smd_setup.ps1`**](./src/Windows/sms_setup.ps1) | Script to install and uninstall the Storage Manager Daemon |
+| [**`smd_gui.ps1`**](./src/Windows/sms_setup.ps1) | Script that provides a gui to configure the Storage Manager Daemon |
+| [**`storage_manager_daemon.ps1`**](./src/Windows/store_manage_service.ps1) | Catalog files within specific folders following the same algorithm described at [RF.Fusion](https://github.com/InovaFiscaliza/RF.Fusion/blob/main/src/agent/README.md). Additionally, manage the storage capacity to ensure minimum availability by deleting files using FIFO order. |
+| [**`install_ermx.ps1`**](./src/Windows/install_ermx.ps1) | Script to install all the modules and microservices for ERMx in a single run |
+| [**`setup_wizard.ps1`**](./src/Windows/install_ermx.ps1) | GUI interactive configuration and execution of setups |
 
 
 <!-- ROADMAP -->
 # Roadmap
 
 * [ ] Create main repository and upload existing data
-  * [x] Complete base upload
-  * [ ] Upload additional data from related projects
-    
+  * [ ] Create new structure for the project providing new GUI and CLI scripts
 
 See the [open issues](https://github.com/othneildrew/Best-README-Template/issues) for a full list of proposed features (and known issues).
 
@@ -102,6 +109,9 @@ Further reading material can be found at:
 <p align="right">(<a href="#indexerd-md-top">back to top</a>)</p>
 
 # Additional References
+
+- Developed using [VSCode](https://code.visualstudio.com/)
+- GUI developed using [PS Winforms Creator](https://www.pswinformscreator.com/)
 
 <p align="right">(<a href="#indexerd-md-top">back to top</a>)</p>
 
