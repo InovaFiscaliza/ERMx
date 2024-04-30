@@ -53,9 +53,8 @@ They new modules are:
 | --- | --- |
 | [**`config.json`**](./src/Windows/config.json) | Configuration parameters that define the powershell script behavior |
 | [**`ovpn_setup.ps1`**](./src/Windows/ovpn_setup.ps1) | Script to install and configure the OpenVPN client including routes to remote LAN |
-| [**`proxy_setup.ps1`**](./src/Windows/proxy_setup.ps1) | Script to configure proxy rules that enable the access to LAN services through the PC, mostly useful when the PC operates as gateway for the LAN |
+| [**`proxy_setup.ps1`**](./src/Windows/proxy_setup.ps1) | Script to configure proxy rules that enable the access to LAN services through the PC, mostly useful when the PC operates as gateway for the LAN services to OpenVPN remote clients|
 | [**`rdp_setup.ps1`**](./src/Windows/firewall_setup.ps1) | Script to configure the Windows RDP access, includes creating user and setting firewall rules |
-services to OpenVPN remote clients |
 | [**`openssh_setup.ps1`**](./src/Windows/openssh_setup.ps1) | Script to install and configure the OpenSSH server, includes creating user and setting firewall rules |
 | [**`smd_setup.ps1`**](./src/Windows/sms_setup.ps1) | Script to install and uninstall the Storage Manager Daemon |
 | [**`smd_gui.ps1`**](./src/Windows/sms_setup.ps1) | Script that provides a gui to configure the Storage Manager Daemon |
